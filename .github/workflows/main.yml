@@ -1,0 +1,33 @@
+on: [push]
+env:
+  NAMESPACE: Boss
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    # Add the JFrog CLI      
+    - uses: jfrog/setup-jfrog-cli@v1
+      env:
+        JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_SECRET_1 }}
+    # Create the Docker image and collect the envioroment variable
+    - run: |
+        docker build . --file Dockerfile --tag batelt-docker.jfrog.io/nginx-demo:latest
+        jfrog rt docker-push batelt-docker.jfrog.io/nginx-demo:latest docker-local --build-name=AKS-Deployment --build-number=${{ github.run_number }}
+        jfrog rt bce AKS-Deployment ${{ github.run_number }}    
+    # Set the target AKS cluster.    
+    - uses: Azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: batel-aks
+        resource-group: defaultresourcegroup-eus
+    # Deploy to our AKS        
+    - uses: Azure/k8s-deploy@v1.3
+      with:
+        manifests: |
+          deployment.yml
+        images: |
+          batelt-docker.jfrog.io/Nginx-demo:latest
+    - run: |
+        jfrog rt bp AKS-Deployment ${{ github.run_number }}
