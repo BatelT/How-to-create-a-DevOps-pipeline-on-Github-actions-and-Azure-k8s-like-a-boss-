@@ -11,6 +11,12 @@ jobs:
     - uses: jfrog/setup-jfrog-cli@v1
       env:
         JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_SECRET_1 }}
+    #login to your Azure dokcer registry
+     #- uses: Azure/docker-login@v1
+      #with:
+       # login-server: <Servername>.azurecr.io
+        #username: ${{ secrets.REGISTRY_USERNAME }}
+        #password: ${{ secrets.REGISTRY_PASSWORD }}
     # Create the Docker image and collect the envioroment variable
     - run: |
         docker build . --file Dockerfile --tag batelt-docker.jfrog.io/nginx-demo:latest
