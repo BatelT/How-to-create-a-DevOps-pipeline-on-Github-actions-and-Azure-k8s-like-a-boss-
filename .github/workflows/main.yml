@@ -19,7 +19,7 @@ jobs:
     # Create the Docker image and collect the envioroment variable
     - run: |
         docker build . --file Dockerfile --tag batelt-docker.jfrog.io/nginx-demo:latest
-        jfrog rt docker-push batelt-docker.jfrog.io/nginx-demo:latest docker-local --build-name=AKS-Deployment --build-number=${{ github.run_number }}
+        jfrog rt docker-push batelt-docker.jfrog.io/nginx-demo:latest docker --build-name=AKS-Deployment --build-number=${{ github.run_number }}
         jfrog rt bce AKS-Deployment ${{ github.run_number }}    
     # Set the target AKS cluster.    
     - uses: Azure/aks-set-context@v1
