@@ -1,7 +1,6 @@
 on: [push]
 env:
   NAMESPACE: Boss
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
